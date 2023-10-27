@@ -1,7 +1,25 @@
 import pytest
+import logging
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+
+
+root_logger = logging.getLogger()
+
+logging.basicConfig(
+    filename="test_log.log",
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    encoding="utf-8"
+)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)  # Уровень логирования для вывода в консоль
+console_format = logging.Formatter('%(levelname)s - %(message)s')
+console_handler.setFormatter(console_format)
+root_logger.addHandler(console_handler)
 
 
 class BasePage:
@@ -10,6 +28,10 @@ class BasePage:
 
     def check_url(self, expected_url):
         assert self.driver.current_url == expected_url
+        logging.info(
+            f"Проверка URL: Ожидаемый URL - {expected_url}, "
+            f"текущий URL - {self.driver.current_url}"
+        )
 
 
 class SbisHomePage(BasePage):
@@ -22,6 +44,7 @@ class SbisHomePage(BasePage):
         )
         contacts_link = header_menu.find_element(By.LINK_TEXT, "Контакты")
         contacts_link.click()
+        logging.info("Переход на страницу 'Контакты' выполнен.")
 
 
 class TensorPage(BasePage):
@@ -32,6 +55,7 @@ class TensorPage(BasePage):
         )
         tensor_banner.click()
         self.driver.switch_to.window(self.driver.window_handles[-1])
+        logging.info("Клик по баннеру 'Тензор' выполнен.")
 
     def check_strength_in_people_block(self):
         try:
@@ -49,6 +73,7 @@ class TensorPage(BasePage):
                 'tensor_ru-CookieAgreement__close'
             )
             close_cookie_message.click()
+            logging.info("Закрытие сообщения о куки выполнено.")
         except NoSuchElementException:
             pass
 
@@ -62,12 +87,14 @@ class TensorPage(BasePage):
             ".//a[@href='/about']"
         )
         details_link.click()
+        logging.info("Переход к разделу 'Сила в людях' выполнен.")
 
 
 class StrengthInPeopleDetailsPage(BasePage):
     def go_to_work_section(self):
         work_section = self.driver.find_element(By.LINK_TEXT, "Работаем")
         work_section.click()
+        logging.info("Переход к разделу 'Работаем' выполнен.")
 
     def check_photo_dimensions(self):
         photo_block = self.driver.find_element(
@@ -90,7 +117,11 @@ class StrengthInPeopleDetailsPage(BasePage):
                     f"Размеры фотографий не совпадают: "
                     f"({reference_width}, {reference_height}) и "
                     f"({width}, {height})"
-                    )
+                )
+                logging.error("Размеры фотографий не совпадают.")
+                return
+
+        logging.info("Проверка размеров фотографий завершена успешно.")
 
 
 @pytest.fixture
