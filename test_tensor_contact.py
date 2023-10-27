@@ -3,6 +3,7 @@ import logging
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+import allure
 
 
 root_logger = logging.getLogger()
@@ -16,7 +17,7 @@ logging.basicConfig(
 )
 
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)  # Уровень логирования для вывода в консоль
+console_handler.setLevel(logging.INFO)
 console_format = logging.Formatter('%(levelname)s - %(message)s')
 console_handler.setFormatter(console_format)
 root_logger.addHandler(console_handler)
@@ -26,6 +27,7 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
 
+    @allure.step("Проверка URL: {expected_url}")
     def check_url(self, expected_url):
         assert self.driver.current_url == expected_url
         logging.info(
@@ -37,6 +39,7 @@ class BasePage:
 class SbisHomePage(BasePage):
     URL = "https://sbis.ru/"
 
+    @allure.step("Переход в раздел 'Контакты'.")
     def go_to_contacts(self):
         header_menu = self.driver.find_element(
             By.CLASS_NAME,
@@ -48,6 +51,7 @@ class SbisHomePage(BasePage):
 
 
 class TensorPage(BasePage):
+    @allure.step("Поиск баннера 'Тензор' и кликаем по нему.")
     def click_tensor_banner(self):
         tensor_banner = self.driver.find_element(
             By.CLASS_NAME,
@@ -57,6 +61,7 @@ class TensorPage(BasePage):
         self.driver.switch_to.window(self.driver.window_handles[-1])
         logging.info("Клик по баннеру 'Тензор' выполнен.")
 
+    @allure.step("Проверка наличия блока 'Сила в людях'.")
     def check_strength_in_people_block(self):
         try:
             self.driver.find_element(
@@ -66,6 +71,7 @@ class TensorPage(BasePage):
         except NoSuchElementException:
             raise AssertionError("Блок 'Сила в людях' не найден на странице.")
 
+    @allure.step("Переход в 'Подробнее' в блоке 'Сила в людях'.")
     def go_to_strength_in_people_details(self):
         try:
             close_cookie_message = self.driver.find_element(
@@ -91,11 +97,7 @@ class TensorPage(BasePage):
 
 
 class StrengthInPeopleDetailsPage(BasePage):
-    def go_to_work_section(self):
-        work_section = self.driver.find_element(By.LINK_TEXT, "Работаем")
-        work_section.click()
-        logging.info("Переход к разделу 'Работаем' выполнен.")
-
+    @allure.step("Поиск раздела 'Работаем' и проверка размеров фотографий.")
     def check_photo_dimensions(self):
         photo_block = self.driver.find_element(
             By.XPATH,
@@ -148,4 +150,4 @@ def test_tensor_contact_scenario(browser):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])
+    pytest.main([__file__, "--alluredir=./allure-results"])
