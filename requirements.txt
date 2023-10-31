@@ -3,13 +3,17 @@ allure-python-commons==2.13.2
 attrs==23.1.0
 certifi==2023.7.22
 cffi==1.16.0
+charset-normalizer==3.3.1
 colorama==0.4.6
+enum34==1.1.10
 flake8==6.1.0
 h11==0.14.0
 idna==3.4
 iniconfig==2.0.0
 isort==5.12.0
+lxml==4.9.3
 mccabe==0.7.0
+namedlist==1.8
 nose==1.3.7
 outcome==1.3.0.post0
 packaging==23.2
@@ -19,7 +23,9 @@ pycparser==2.21
 pyflakes==3.1.0
 PySocks==1.7.1
 pytest==7.4.3
+requests==2.31.0
 selenium==4.14.0
+six==1.16.0
 sniffio==1.3.0
 sortedcontainers==2.4.0
 trio==0.22.2

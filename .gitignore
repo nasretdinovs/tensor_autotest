@@ -165,5 +165,8 @@ allure-report/
 # Папка с результатами тестов Allure
 allure-results/
 
+# Папка для загрузки файла
+downloads/
+
 # Логи
 test_log.log
